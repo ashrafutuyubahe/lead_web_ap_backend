@@ -11,7 +11,7 @@ const swaggerDefinition = {
   servers: [
     {
       url: 'https://lead-web-app.onrender.com/', 
-      description: 'productino Server',
+      description: 'production Server',
     },
   ],
   components: {
