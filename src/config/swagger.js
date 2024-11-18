@@ -10,8 +10,8 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'http://localhost:4000', 
-      description: 'Development Server',
+      url: 'https://lead-web-app.onrender.com/', 
+      description: 'productino Server',
     },
   ],
   components: {

@@ -13,6 +13,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
   },
 });
 
+
 async function connectToDatabase() {
   try {
     await sequelize.authenticate();
