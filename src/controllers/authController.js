@@ -65,3 +65,9 @@ function generateJWT(admin) {
     expiresIn: "1h",
   });
 }
+
+
+
+exports.getGreetings = async (req, res) => {
+  return res.status(200).json({ message: "Helloo there.." });
+};

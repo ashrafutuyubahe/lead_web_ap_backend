@@ -8,5 +8,6 @@ const registerSwagger = require('../swagger/register&loginSwagger');
 router.post('/register', authController.registerAdmin);
 
 router.post('/login', authController.loginAdmin);
+router.get("/getGreetings",authController.getGreetings);
 
 module.exports = router;    
