@@ -12,6 +12,7 @@
   const logger = require("./utils/logger");
   const swaggerUi = require('swagger-ui-express');
   const swaggerSpec = require('./config/swagger'); 
+  const cors= require("cors");
 
 
 
@@ -23,11 +24,19 @@
 
   const server = http.createServer(app);
 
-  const io = socketIo(server, {
-    cors: {
-      origin: "*",
-    },
-  });
+  app.use(cors({
+    credentials: true,
+    origin: "*",
+    methods:"GET,POST,PUT,DELETE"
+  }));
+
+
+
+  // const io = socketIo(server, {
+  //   cors: {
+  //     origin: "*",
+  //   },
+  // });
 
   //api section
   app.use("/choir_manager/v1/auth", authRoutes);
