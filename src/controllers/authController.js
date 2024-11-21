@@ -62,7 +62,7 @@ exports.loginAdmin = async (req, res) => {
 
 function generateJWT(admin) {
   return jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "1d",
   });
 }
 

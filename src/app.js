@@ -15,6 +15,8 @@
   const cors= require("cors");
 
 
+  
+
 
 
 
@@ -40,13 +42,15 @@
 
   //api section
   app.use("/choir_manager/v1/auth", authRoutes);
-  app.use("/choir_manager/v1/attendaces/",attendendenceRoutes);
+  app.use("/choir_manager/v1/attendaces",attendendenceRoutes);
   app.use("/choir_manager/v1/member",memberRoutes);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   // setInterval(() => {
   //   monitorAttendance(io);
   // }, 300000);
+
+
 
   server.listen(PORT, () => {
     logger.info(`WebSocket  and server are both running on port ${PORT}...`);
