@@ -3,7 +3,7 @@
  * /choir_manager/v1/member/addChoirMember:
  *   post:
  *     summary: Add a new choir member
- *     description: Adds a new member to the choir with the provided details.
+ *     description: Adds a new member to the choir with the provided details and returns the added member and a success message.
  *     tags:
  *       - Choir Members
  *     requestBody:
@@ -13,88 +13,59 @@
  *           schema:
  *             type: object
  *             properties:
- *               memberFirstName:
+ *               choirMemberFirstName:
  *                 type: string
- *               memberLastName:
+ *               choirMemberLastName:
  *                 type: string
- *               MemberGender:
+ *               choirMemberGender:
  *                 type: string
- *               memberPhoneNumber:
+ *               choirMemberPhoneNumber:
  *                 type: string
  *             required:
- *               - memberFirstName
- *               - memberLastName
- *               - MemberGender
- *               - memberPhoneNumber
+ *               - choirMemberFirstName
+ *               - choirMemberLastName
+ *               - choirMemberGender
+ *               - choirMemberPhoneNumber
  *     responses:
  *       201:
  *         description: Choir member added successfully
- *       400:
- *         description: Missing required fields
- *       500:
- *         description: Internal server error
- */
-
-/**
- * @swagger
- * /choir_manager/v1/member/getAllCHoirMembers:
- *   get:
- *     summary: Get all choir members
- *     description: Retrieves all choir members from the database.
- *     tags:
- *       - Choir Members
- *     responses:
- *       200:
- *         description: List of choir members
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 members:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       memberFirstName:
- *                         type: string
- *                       memberLastName:
- *                         type: string
- *                       MemberGender:
- *                         type: string
- *                       memberPhoneNumber:
- *                         type: string
- *                 totalMemberNumber:
- *                   type: integer
- *       404:
- *         description: No choir members found
- *       500:
- *         description: Internal server error
- */
-
-/**
- * @swagger
- * /choir_manager/v1/member/upload_choirMemberFile:
- *   post:
- *     summary: Upload choir members from file
- *     description: Uploads an Excel file to add multiple choir members in bulk.
- *     tags:
- *       - Choir Members
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *     responses:
- *       200:
- *         description: File processed successfully
+ *                 message:
+ *                   type: string
+ *                   example: Choir member added successfully
+ *                 member:
+ *                   type: object
+ *                   properties:
+ *                     choirMemberFirstName:
+ *                       type: string
+ *                     choirMemberLastName:
+ *                       type: string
+ *                     choirMemberGender:
+ *                       type: string
+ *                     choirMemberPhoneNumber:
+ *                       type: string
  *       400:
- *         description: No file uploaded
+ *         description: Missing required fields
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: All fields are required: choirMemberFirstName, choirMemberLastName, choirMemberGender, and choirMemberPhoneNumber.
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Failed to add choir member.
  */
