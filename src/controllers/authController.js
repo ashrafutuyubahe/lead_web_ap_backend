@@ -4,6 +4,7 @@ const { Op, Sequelize } = require("sequelize");
 const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
 
+
 exports.registerAdmin = async (req, res) => {
   try {
     const { adminName, adminEmail, adminPassword, adminPhoneNumber } = req.body;
@@ -55,21 +56,48 @@ exports.loginAdmin = async (req, res) => {
   }
 };
 
+
+
 exports.logOutAdmin = async (req, res) => {
   try {
     const token = req.headers["authorization"];
     if (!token) {
-      return res.status(400).json({ error: "No token provided" });
+      return res.status(400).json({
+        message: "No token provided in the request header",
+        error: true
+      });
     }
 
-    res.clearCookie("token");
+    const tokenValue = token.split(" ")[1];
 
-    res.status(200).json({ message: "Successfully logged out" });
+    
+    jwt.verify(tokenValue, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+       
+        return res.status(401).json({
+          message: "Unauthorized, token is invalid or already logged out",
+          error: true
+        });
+      }
+
+      
+      res.clearCookie("token");
+
+     
+      return res.status(200).json({
+        message: "Successfully logged out. Token invalidated.",
+        error: false
+      });
+    });
   } catch (err) {
     logger.error("Error logging out admin:", err);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+      error: true
+    });
   }
 };
+
 
 function generateJWT(admin) {
   return jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET, {
