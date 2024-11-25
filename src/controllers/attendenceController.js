@@ -109,23 +109,16 @@ exports.getAttendanceStatistics = async (req, res) => {
   try {
     const totalChoirMembers = await choirMember.count();
 
-    const attendanceData = await AttendanceModel.findAll({
-      attributes: [
-        "attendanceType",
-        [Sequelize.fn("EXTRACT", Sequelize.literal("MONTH FROM attendanceDate")), "month"],  
-        [
-          Sequelize.fn("SUM", Sequelize.literal("CASE WHEN attendanceStatus = 'present' THEN 1 ELSE 0 END")), 
-          "presentCount",  
-        ],
-        [
-          Sequelize.fn("COUNT", Sequelize.col("attendanceStatus")),
-          "totalCount",  
-        ],
-      ],
-      group: ["attendanceType", Sequelize.fn("EXTRACT", Sequelize.literal("MONTH FROM attendanceDate"))],
-      raw: true,
-    });
-    
+    // Use raw query to get attendance statistics
+    const attendanceData = await Sequelize.query(
+      `SELECT "attendanceType", 
+              EXTRACT(MONTH FROM "attendanceDate") AS "month", 
+              SUM(CASE WHEN "attendanceStatus" = 'present' THEN 1 ELSE 0 END) AS "presentCount", 
+              COUNT("attendanceStatus") AS "totalCount" 
+       FROM "Attendances" 
+       GROUP BY "attendanceType", EXTRACT(MONTH FROM "attendanceDate");`,
+      { type: QueryTypes.SELECT }
+    );
 
     const attendanceStatistics = {};
     let totalPresent = 0;
