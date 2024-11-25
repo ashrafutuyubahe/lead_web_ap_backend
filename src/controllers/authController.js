@@ -4,7 +4,6 @@ const { Op, Sequelize } = require("sequelize");
 const bcrypt = require("bcrypt");
 const logger = require("../utils/logger");
 
-
 exports.registerAdmin = async (req, res) => {
   try {
     const { adminName, adminEmail, adminPassword, adminPhoneNumber } = req.body;
@@ -15,13 +14,15 @@ exports.registerAdmin = async (req, res) => {
       },
     });
     if (existingAdmin) {
-      return res.status(400).json({ error: "Admin already exists with this email or phone number" });
+      return res
+        .status(400)
+        .json({
+          error: "Admin already exists with this email or phone number",
+        });
     }
 
-   
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-   
     const newAdmin = await Admin.create({
       adminName,
       adminEmail,
@@ -29,28 +30,23 @@ exports.registerAdmin = async (req, res) => {
       adminPhoneNumber,
     });
 
-    
-   
-    res.status(201).json({message:"you have successfully registered"});
+    res.status(201).json({ message: "you have successfully registered" });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     logger.error("Error registering admin:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-
 exports.loginAdmin = async (req, res) => {
   try {
     const { adminEmail, adminPassword } = req.body;
 
-  
     const admin = await Admin.findOne({ where: { adminEmail } });
     if (!admin || !(await bcrypt.compare(adminPassword, admin.adminPassword))) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-   
     const token = generateJWT(admin);
     res.json({ token });
   } catch (err) {
@@ -59,14 +55,27 @@ exports.loginAdmin = async (req, res) => {
   }
 };
 
+exports.logOutAdmin = async (req, res) => {
+  try {
+    const token = req.headers["authorization"];
+    if (!token) {
+      return res.status(400).json({ error: "No token provided" });
+    }
+
+    res.clearCookie("token");
+
+    res.status(200).json({ message: "Successfully logged out" });
+  } catch (err) {
+    logger.error("Error logging out admin:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 function generateJWT(admin) {
   return jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
 }
-
-
 
 exports.getGreetings = async (req, res) => {
   return res.status(200).json({ message: "Helloo there.." });

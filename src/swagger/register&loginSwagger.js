@@ -87,3 +87,33 @@
  *       500:
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /choir_manager/v1/auth/logout:
+ *   post:
+ *     summary: Logout an admin
+ *     description: Logs out the admin by invalidating their JWT token.
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []  # Ensure this matches your Swagger security configuration
+ *     responses:
+ *       200:
+ *         description: Admin logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Successfully logged out. Token invalidated."
+ *       400:
+ *         description: No token provided in the request header
+ *       401:
+ *         description: Unauthorized, token is invalid or already logged out
+ *       500:
+ *         description: Internal server error
+ */
+
