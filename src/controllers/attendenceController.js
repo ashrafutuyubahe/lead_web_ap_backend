@@ -18,19 +18,15 @@ exports.markAttendance = async (req, res) => {
     for (const entry of data) {
       const { attendanceType, ChoirMemberId, attendanceStatus } = entry;
 
-      // Check if the choir member exists
       const member = await choirMember.findByPk(ChoirMemberId);
       if (!member) {
         logger.warn(`Choir member with ID ${ChoirMemberId} not found.`);
         continue;
       }
 
-      if (!member.isAuthorized) {
-        logger.warn(`Choir member with ID ${ChoirMemberId} is not authorized.`);
-        continue;
-      }
+     
 
-      // Prepare attendance data
+   
       attendances.push({
         attendanceType,
         ChoirMemberId,
@@ -39,7 +35,7 @@ exports.markAttendance = async (req, res) => {
       });
     }
 
-    // Bulk insert all attendance records
+    
     if (attendances.length > 0) {
       await AttendanceModel.bulkCreate(attendances);
       res.status(200).json({ message: "Attendance marked successfully." });
@@ -57,7 +53,7 @@ exports.markAttendance = async (req, res) => {
 
 exports.getAttendanceStatistics = async (req, res) => {
   try {
-    // Fetch all attendance records
+   
     const attendanceRecords = await AttendanceModel.findAll();
 
     const attendanceStatistics = {};
@@ -68,12 +64,12 @@ exports.getAttendanceStatistics = async (req, res) => {
       const { attendanceType, attendanceDate, attendanceStatus } = record;
       const month = new Date(attendanceDate).getMonth() + 1;
 
-      // Initialize statistics for the attendance type if it doesn't exist
+     
       if (!attendanceStatistics[attendanceType]) {
         attendanceStatistics[attendanceType] = [];
       }
 
-      // Find or initialize data for the month
+    
       let monthlyData = attendanceStatistics[attendanceType].find(
         (entry) => entry.month === month
       );
@@ -86,20 +82,19 @@ exports.getAttendanceStatistics = async (req, res) => {
         attendanceStatistics[attendanceType].push(monthlyData);
       }
 
-      // Update counts
+      
       monthlyData.totalCount++;
       if (attendanceStatus === "present") {
         monthlyData.presentCount++;
       }
 
-      // Update overall counts
+     
       if (attendanceStatus === "present") {
         totalPresent++;
       }
       totalAttendances++;
     });
 
-    // Calculate attendance percentage
     Object.values(attendanceStatistics).forEach((typeStats) => {
       typeStats.forEach((entry) => {
         entry.attendancePercentage = (
