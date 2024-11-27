@@ -104,7 +104,7 @@ exports.markAttendance = async (req, res) => {
 
 exports.getAttendanceStatistics = async (req, res) => {
   try {
-    // Step 1: Fetch all attendance records
+ 
     const attendanceRecords = await AttendanceModel.findAll();
 
     console.log("here are data",attendanceRecords);
