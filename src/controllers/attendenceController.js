@@ -101,18 +101,13 @@ exports.markAttendance = async (req, res) => {
 };
 
 
+
 exports.getAttendanceStatistics = async (req, res) => {
   try {
-    // SQL query to get the attendance statistics, grouped by attendance type and month
-    const attendanceData =await AttendanceModel.sequelize.query(
-      `SELECT "attendanceType", 
-              EXTRACT(MONTH FROM "attendanceDate") AS "month", 
-              SUM(CASE WHEN "attendanceStatus" = 'present' THEN 1 ELSE 0 END) AS "presentCount", 
-              COUNT("attendanceStatus") AS "totalCount" 
-       FROM "Attendances" 
-       GROUP BY "attendanceType", EXTRACT(MONTH FROM "attendanceDate")`,
-      { type: QueryTypes.SELECT }
-    );
+    // Step 1: Fetch all attendance records
+    const attendanceRecords = await AttendanceModel.findAll();
+
+    console.log("here are data",attendanceRecords);
 
     const attendanceStatistics = {
       church: [],
@@ -124,41 +119,66 @@ exports.getAttendanceStatistics = async (req, res) => {
     let totalPresent = 0;
     let totalAttendances = 0;
 
-    // Process the data to format it for graphing
-    attendanceData.forEach((entry) => {
-      const { attendanceType, month, presentCount, totalCount } = entry;
+    // Step 2: Group and process data
+    attendanceRecords.forEach((record) => {
+      const { attendanceType, attendanceDate, attendanceStatus } = record;
 
-      const attendancePercentage = ((presentCount / totalCount) * 100).toFixed(2);
+      const month = new Date(attendanceDate).getMonth() + 1;
 
-      // Format the data to be used for graphing
-      if (attendanceStatistics[attendanceType]) {
-        attendanceStatistics[attendanceType].push({
-          month: parseInt(month),
-          presentCount: parseInt(presentCount),
-          totalCount: parseInt(totalCount),
-          attendancePercentage,
-        });
+      if (!attendanceStatistics[attendanceType]) {
+        console.warn(`Unknown attendance type: ${attendanceType}`);
+        return;
       }
 
-      totalPresent += parseInt(presentCount);
-      totalAttendances += parseInt(totalCount);
+      // Check if data for the current month exists, otherwise initialize
+      let monthlyData = attendanceStatistics[attendanceType].find(
+        (entry) => entry.month === month
+      );
+
+      if (!monthlyData) {
+        monthlyData = {
+          month,
+          presentCount: 0,
+          totalCount: 0,
+        };
+        attendanceStatistics[attendanceType].push(monthlyData);
+      }
+
+      // Increment counts
+      monthlyData.totalCount += 1;
+      if (attendanceStatus === "present") {
+        monthlyData.presentCount += 1;
+      }
+
+      totalPresent += attendanceStatus === "present" ? 1 : 0;
+      totalAttendances += 1;
     });
 
-    // Calculate overall attendance percentage
-    const overallAttendancePercentage = (
-      (totalPresent / totalAttendances) *
-      100
-    ).toFixed(2);
+    // Step 3: Calculate percentages
+    Object.values(attendanceStatistics).forEach((typeStatistics) => {
+      typeStatistics.forEach((entry) => {
+        entry.attendancePercentage = (
+          (entry.presentCount / entry.totalCount) *
+          100
+        ).toFixed(2);
+      });
+    });
 
-    // Response in a graph-friendly format
+    const overallAttendancePercentage =
+      totalAttendances > 0
+        ? ((totalPresent / totalAttendances) * 100).toFixed(2)
+        : "0.00";
+
+    const totalChoirMembers = await choirMember.count();
+
+    // Step 4: Return response
     res.status(200).json({
       attendanceStatistics,
       overallAttendancePercentage,
-      totalChoirMembers: await choirMember.count(),
+      totalChoirMembers,
     });
   } catch (error) {
-    console.log(error);
-    logger.error("Error retrieving attendance statistics:", error);
+    console.error("Error retrieving attendance statistics:", error);
     res.status(500).json({ error: "Server error, try again later" });
   }
 };
