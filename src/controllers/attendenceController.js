@@ -119,7 +119,7 @@ exports.getAttendanceStatistics = async (req, res) => {
     let totalPresent = 0;
     let totalAttendances = 0;
 
-    // Step 2: Group and process data
+    
     attendanceRecords.forEach((record) => {
       const { attendanceType, attendanceDate, attendanceStatus } = record;
 
