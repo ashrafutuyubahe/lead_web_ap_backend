@@ -106,77 +106,78 @@ exports.getAttendanceStatistics = async (req, res) => {
   try {
  
     const attendanceRecords = await AttendanceModel.findAll();
+    res.status(200).json({attendanceRecords});
 
-    console.log("here are data",attendanceRecords);
+    // console.log("here are data",attendanceRecords);
 
-    const attendanceStatistics = {
-      church: [],
-      wedding: [],
-      repetition: [],
-      death: [],
-    };
+    // const attendanceStatistics = {
+    //   church: [],
+    //   wedding: [],
+    //   repetition: [],
+    //   death: [],
+    // };
 
-    let totalPresent = 0;
-    let totalAttendances = 0;
+    // let totalPresent = 0;
+    // let totalAttendances = 0;
 
-    
-    attendanceRecords.forEach((record) => {
-      const { attendanceType, attendanceDate, attendanceStatus } = record;
 
-      const month = new Date(attendanceDate).getMonth() + 1;
+    // attendanceRecords.forEach((record) => {
+    //   const { attendanceType, attendanceDate, attendanceStatus } = record;
 
-      if (!attendanceStatistics[attendanceType]) {
-        console.warn(`Unknown attendance type: ${attendanceType}`);
-        return;
-      }
+    //   const month = new Date(attendanceDate).getMonth() + 1;
 
-      // Check if data for the current month exists, otherwise initialize
-      let monthlyData = attendanceStatistics[attendanceType].find(
-        (entry) => entry.month === month
-      );
+    //   if (!attendanceStatistics[attendanceType]) {
+    //     console.warn(`Unknown attendance type: ${attendanceType}`);
+    //     return;
+    //   }
 
-      if (!monthlyData) {
-        monthlyData = {
-          month,
-          presentCount: 0,
-          totalCount: 0,
-        };
-        attendanceStatistics[attendanceType].push(monthlyData);
-      }
+    //   // Check if data for the current month exists, otherwise initialize
+    //   let monthlyData = attendanceStatistics[attendanceType].find(
+    //     (entry) => entry.month === month
+    //   );
 
-      // Increment counts
-      monthlyData.totalCount += 1;
-      if (attendanceStatus === "present") {
-        monthlyData.presentCount += 1;
-      }
+    //   if (!monthlyData) {
+    //     monthlyData = {
+    //       month,
+    //       presentCount: 0,
+    //       totalCount: 0,
+    //     };
+    //     attendanceStatistics[attendanceType].push(monthlyData);
+    //   }
 
-      totalPresent += attendanceStatus === "present" ? 1 : 0;
-      totalAttendances += 1;
-    });
+    //   // Increment counts
+    //   monthlyData.totalCount += 1;
+    //   if (attendanceStatus === "present") {
+    //     monthlyData.presentCount += 1;
+    //   }
 
-    // Step 3: Calculate percentages
-    Object.values(attendanceStatistics).forEach((typeStatistics) => {
-      typeStatistics.forEach((entry) => {
-        entry.attendancePercentage = (
-          (entry.presentCount / entry.totalCount) *
-          100
-        ).toFixed(2);
-      });
-    });
+    //   totalPresent += attendanceStatus === "present" ? 1 : 0;
+    //   totalAttendances += 1;
+    // });
 
-    const overallAttendancePercentage =
-      totalAttendances > 0
-        ? ((totalPresent / totalAttendances) * 100).toFixed(2)
-        : "0.00";
+    // // Step 3: Calculate percentages
+    // Object.values(attendanceStatistics).forEach((typeStatistics) => {
+    //   typeStatistics.forEach((entry) => {
+    //     entry.attendancePercentage = (
+    //       (entry.presentCount / entry.totalCount) *
+    //       100
+    //     ).toFixed(2);
+    //   });
+    // });
 
-    const totalChoirMembers = await choirMember.count();
+    // const overallAttendancePercentage =
+    //   totalAttendances > 0
+    //     ? ((totalPresent / totalAttendances) * 100).toFixed(2)
+    //     : "0.00";
 
-    // Step 4: Return response
-    res.status(200).json({
-      attendanceStatistics,
-      overallAttendancePercentage,
-      totalChoirMembers,
-    });
+    // const totalChoirMembers = await choirMember.count();
+
+    // // Step 4: Return response
+    // res.status(200).json({
+    //   attendanceStatistics,
+    //   overallAttendancePercentage,
+    //   totalChoirMembers,
+    // });
   } catch (error) {
     console.error("Error retrieving attendance statistics:", error);
     res.status(500).json({ error: "Server error, try again later" });
