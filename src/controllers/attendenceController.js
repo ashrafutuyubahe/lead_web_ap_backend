@@ -25,7 +25,10 @@ exports.markAttendance = async (req, res) => {
         continue;
       }
 
-      
+      if (!member.isAuthorized) {
+        logger.warn(`Choir member with ID ${ChoirMemberId} is not authorized.`);
+        continue;
+      }
 
       // Prepare attendance data
       attendances.push({
