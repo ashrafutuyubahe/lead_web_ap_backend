@@ -140,6 +140,112 @@ exports.getAttendanceStatistics = async (req, res) => {
 
 
 
-const searchByName= async(req,res)=>{
-  
-}
+
+
+exports.searchByName = async (req, res) => {
+  try {
+    const { firstName, lastName } = req.query;
+
+    if (!firstName && !lastName) {
+      return res.status(400).json({
+        message: "Please provide a first name or last name to search.",
+      });
+    }
+
+    // Build search criteria for choirMember
+    const searchCriteria = {};
+    if (firstName) {
+      searchCriteria.choirMemberFirstName = { [Op.like]: `%${firstName}%` };
+    }
+    if (lastName) {
+      searchCriteria.choirMemberLastName = { [Op.like]: `%${lastName}%` };
+    }
+
+    // Fetch attendance data with member names
+    const attendanceRecords = await AttendanceModel.findAll({
+      include: [
+        {
+          model: choirMember,
+          where: searchCriteria,
+          attributes: ["id", "choirMemberFirstName", "choirMemberLastName"],
+        },
+      ],
+      attributes: ["attendanceType", "attendanceDate", "attendanceStatus", "ChoirMemberId"],
+    });
+
+    if (attendanceRecords.length === 0) {
+      return res.status(404).json({
+        message: "No records found matching the search criteria.",
+      });
+    }
+
+    // Group data by ChoirMemberId
+    const groupedData = attendanceRecords.reduce((acc, record) => {
+      const { ChoirMemberId, attendanceType, attendanceDate, attendanceStatus } = record;
+      const memberName = `${record.choirMember.choirMemberFirstName} ${record.choirMember.choirMemberLastName}`;
+      const month = new Date(attendanceDate).getMonth() + 1;
+
+      if (!acc[ChoirMemberId]) {
+        acc[ChoirMemberId] = {
+          memberId: ChoirMemberId,
+          name: memberName,
+          attendanceStatistics: {},
+          totalPresent: 0,
+          totalAttendances: 0,
+        };
+      }
+
+      const stats = acc[ChoirMemberId];
+      if (!stats.attendanceStatistics[attendanceType]) {
+        stats.attendanceStatistics[attendanceType] = {};
+      }
+
+      if (!stats.attendanceStatistics[attendanceType][month]) {
+        stats.attendanceStatistics[attendanceType][month] = {
+          presentCount: 0,
+          totalCount: 0,
+        };
+      }
+
+      const monthlyStats = stats.attendanceStatistics[attendanceType][month];
+      monthlyStats.totalCount++;
+      stats.totalAttendances++;
+      if (attendanceStatus.toLowerCase() === "present") {
+        monthlyStats.presentCount++;
+        stats.totalPresent++;
+      }
+
+      return acc;
+    }, {});
+
+    // Format data for response
+    const result = Object.values(groupedData).map((member) => {
+      const { attendanceStatistics, totalPresent, totalAttendances } = member;
+
+      // Calculate percentages
+      Object.keys(attendanceStatistics).forEach((type) => {
+        Object.keys(attendanceStatistics[type]).forEach((month) => {
+          const monthStats = attendanceStatistics[type][month];
+          monthStats.attendancePercentage = (
+            (monthStats.presentCount / monthStats.totalCount) *
+            100
+          ).toFixed(2);
+        });
+      });
+
+      member.overallAttendancePercentage =
+        ((totalPresent / totalAttendances) * 100).toFixed(2);
+      return member;
+    });
+
+    res.status(200).json({
+      message: "Search results:",
+      members: result,
+    });
+  } catch (error) {
+    console.error("Error searching for choir members:", error);
+    res.status(500).json({
+      message: "Server error, try again later.",
+    });
+  }
+};

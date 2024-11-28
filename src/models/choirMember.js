@@ -36,4 +36,5 @@ const choirMember= sequelize.define("ChoirMember",{
   module.exports= choirMember
 
 
+
   
