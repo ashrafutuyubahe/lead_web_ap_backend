@@ -4,10 +4,9 @@ const AbsentChoirMember = require("../models/absentChoirMemberModel");
 const logger = require("../utils/logger");
 const { Op, Sequelize } = require("sequelize");
 const { QueryTypes } = require("sequelize");
-const monitorAttendance = require("../utils/monitorAttendance");
+
 const regularAttendanceCheck = require("../utils/regularAttendanceCheck");
 const io = require("../utils/io");
-
 exports.markAttendance = async (req, res) => {
   const { data } = req.body;
 
@@ -25,8 +24,15 @@ exports.markAttendance = async (req, res) => {
       }
 
      
+      try {
+        await regularAttendanceCheck(io, ChoirMemberId);
+      } catch (checkError) {
+        logger.error(
+          `Error checking regular attendance for ChoirMemberId ${ChoirMemberId}: ${checkError.message}`
+        );
+      }
 
-   
+     
       attendances.push({
         attendanceType,
         ChoirMemberId,
@@ -47,6 +53,7 @@ exports.markAttendance = async (req, res) => {
     res.status(500).json({ error: "Server error, try again later." });
   }
 };
+
 
 
 
