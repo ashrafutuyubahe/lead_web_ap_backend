@@ -142,52 +142,68 @@ exports.getAttendanceStatistics = async (req, res) => {
 
 
 
+
+
 exports.searchByName = async (req, res) => {
   try {
-    const { firstName, lastName } = req.query;
+    // Capture all query parameters
+    const queryParams = req.query;
 
-    if (!firstName && !lastName) {
+    // Ensure at least one parameter is passed
+    if (!queryParams.firstName && !queryParams.lastName) {
       return res.status(400).json({
         message: "Please provide a first name or last name to search.",
       });
     }
 
-    // Build search criteria for choirMember
+    // Determine which parameter is present and create search criteria
     const searchCriteria = {};
-    if (firstName) {
-      searchCriteria.choirMemberFirstName = { [Op.like]: `%${firstName}%` };
+    if (queryParams.firstName) {
+      searchCriteria.choirMemberFirstName = { [Op.like]: `%${queryParams.firstName}%` };
     }
-    if (lastName) {
-      searchCriteria.choirMemberLastName = { [Op.like]: `%${lastName}%` };
+    if (queryParams.lastName) {
+      searchCriteria.choirMemberLastName = { [Op.like]: `%${queryParams.lastName}%` };
     }
 
-    // Fetch attendance data with member names
+    // Fetch matching choir members based on the search criteria
+    const choirMembers = await choirMember.findAll({
+      where: searchCriteria,
+      attributes: ["choirMemberId", "choirMemberFirstName", "choirMemberLastName"],
+    });
+
+    if (choirMembers.length === 0) {
+      return res.status(404).json({
+        message: "No choir members found matching the search criteria.",
+      });
+    }
+
+    // Collect all choirMemberIds from the found choir members
+    const choirMemberIds = choirMembers.map((member) => member.choirMemberId);
+
+    // Fetch attendance records for these choir members
     const attendanceRecords = await AttendanceModel.findAll({
-      include: [
-        {
-          model: choirMember,
-          where: searchCriteria,
-          attributes: ["id", "choirMemberFirstName", "choirMemberLastName"],
-        },
-      ],
-      attributes: ["attendanceType", "attendanceDate", "attendanceStatus", "ChoirMemberId"],
+      where: {
+        choirMemberId: { [Op.in]: choirMemberIds },
+      },
+      attributes: ["attendanceType", "attendanceDate", "attendanceStatus", "choirMemberId"],
     });
 
     if (attendanceRecords.length === 0) {
       return res.status(404).json({
-        message: "No records found matching the search criteria.",
+        message: "No attendance records found for the search criteria.",
       });
     }
 
-    // Group data by ChoirMemberId
+    // Group attendance data by choir member
     const groupedData = attendanceRecords.reduce((acc, record) => {
-      const { ChoirMemberId, attendanceType, attendanceDate, attendanceStatus } = record;
-      const memberName = `${record.choirMember.choirMemberFirstName} ${record.choirMember.choirMemberLastName}`;
+      const { choirMemberId, attendanceType, attendanceDate, attendanceStatus } = record;
+      const member = choirMembers.find((m) => m.choirMemberId === choirMemberId);
+      const memberName = `${member.choirMemberFirstName} ${member.choirMemberLastName}`;
       const month = new Date(attendanceDate).getMonth() + 1;
 
-      if (!acc[ChoirMemberId]) {
-        acc[ChoirMemberId] = {
-          memberId: ChoirMemberId,
+      if (!acc[choirMemberId]) {
+        acc[choirMemberId] = {
+          memberId: choirMemberId,
           name: memberName,
           attendanceStatistics: {},
           totalPresent: 0,
@@ -195,7 +211,7 @@ exports.searchByName = async (req, res) => {
         };
       }
 
-      const stats = acc[ChoirMemberId];
+      const stats = acc[choirMemberId];
       if (!stats.attendanceStatistics[attendanceType]) {
         stats.attendanceStatistics[attendanceType] = {};
       }
