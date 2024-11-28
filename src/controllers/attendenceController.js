@@ -140,4 +140,6 @@ exports.getAttendanceStatistics = async (req, res) => {
 
 
 
-
+const searchByName= async(req,res)=>{
+  
+}
