@@ -53,23 +53,30 @@ exports.markAttendance = async (req, res) => {
 
 exports.getAttendanceStatistics = async (req, res) => {
   try {
-   
-    const attendanceRecords = await AttendanceModel.findAll();
 
+    const attendanceRecords = await AttendanceModel.findAll();
+    const choirMembers = await choirMember.findAll();
+    
     const attendanceStatistics = {};
     let totalPresent = 0;
     let totalAttendances = 0;
 
+   
+    const choirMemberSet = new Set();
+
+   
     attendanceRecords.forEach((record) => {
-      const { attendanceType, attendanceDate, attendanceStatus } = record;
+      const { attendanceType, attendanceDate, attendanceStatus, ChoirMemberId } = record;
       const month = new Date(attendanceDate).getMonth() + 1;
+
+      choirMemberSet.add(ChoirMemberId);
 
      
       if (!attendanceStatistics[attendanceType]) {
         attendanceStatistics[attendanceType] = [];
       }
 
-    
+     
       let monthlyData = attendanceStatistics[attendanceType].find(
         (entry) => entry.month === month
       );
@@ -82,19 +89,20 @@ exports.getAttendanceStatistics = async (req, res) => {
         attendanceStatistics[attendanceType].push(monthlyData);
       }
 
-      
+   
       monthlyData.totalCount++;
-      if (attendanceStatus === "present") {
+      if (attendanceStatus.toLowerCase() === "present") {
         monthlyData.presentCount++;
       }
 
-     
-      if (attendanceStatus === "present") {
+    
+      if (attendanceStatus.toLowerCase() === "present") {
         totalPresent++;
       }
       totalAttendances++;
     });
 
+   
     Object.values(attendanceStatistics).forEach((typeStats) => {
       typeStats.forEach((entry) => {
         entry.attendancePercentage = (
@@ -109,14 +117,18 @@ exports.getAttendanceStatistics = async (req, res) => {
         ? ((totalPresent / totalAttendances) * 100).toFixed(2)
         : "0.00";
 
+    const totalChoirMembers = choirMembers.length;
+
     res.status(200).json({
-      attendanceStatistics,
+      totalChoirMembers,
       overallAttendancePercentage,
       totalAttendances,
+      attendanceStatistics,
     });
   } catch (error) {
     console.error("Error retrieving attendance statistics:", error);
     res.status(500).json({ error: "Server error, try again later." });
   }
 };
+
 
