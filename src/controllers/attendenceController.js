@@ -7,6 +7,9 @@ const { QueryTypes } = require("sequelize");
 
 const regularAttendanceCheck = require("../utils/regularAttendanceCheck");
 const io = require("../utils/io");
+
+
+
 exports.markAttendance = async (req, res) => {
   const { data } = req.body;
 
@@ -58,12 +61,18 @@ exports.markAttendance = async (req, res) => {
 
 
 
+
+
+
+
+
 exports.getAttendanceStatistics = async (req, res) => {
   try {
 
     const attendanceRecords = await AttendanceModel.findAll();
     const choirMembers = await choirMember.findAll();
     
+
     const attendanceStatistics = {};
     let totalPresent = 0;
     let totalAttendances = 0;
@@ -144,19 +153,21 @@ exports.getAttendanceStatistics = async (req, res) => {
 
 
 
+
+
 exports.searchByName = async (req, res) => {
   try {
-    // Capture all query parameters
+  
     const queryParams = req.query;
 
-    // Ensure at least one parameter is passed
+
     if (!queryParams.firstName && !queryParams.lastName) {
       return res.status(400).json({
         message: "Please provide a first name or last name to search.",
       });
     }
 
-    // Determine which parameter is present and create search criteria
+    
     const searchCriteria = {};
     if (queryParams.firstName) {
       searchCriteria.choirMemberFirstName = { [Op.like]: `%${queryParams.firstName}%` };
@@ -165,7 +176,7 @@ exports.searchByName = async (req, res) => {
       searchCriteria.choirMemberLastName = { [Op.like]: `%${queryParams.lastName}%` };
     }
 
-    // Fetch matching choir members based on the search criteria
+   
     const choirMembers = await choirMember.findAll({
       where: searchCriteria,
       attributes: ["choirMemberId", "choirMemberFirstName", "choirMemberLastName"],
@@ -177,10 +188,10 @@ exports.searchByName = async (req, res) => {
       });
     }
 
-    // Collect all choirMemberIds from the found choir members
+   
     const choirMemberIds = choirMembers.map((member) => member.choirMemberId);
 
-    // Fetch attendance records for these choir members
+ 
     const attendanceRecords = await AttendanceModel.findAll({
       where: {
         choirMemberId: { [Op.in]: choirMemberIds },
@@ -194,7 +205,7 @@ exports.searchByName = async (req, res) => {
       });
     }
 
-    // Group attendance data by choir member
+   
     const groupedData = attendanceRecords.reduce((acc, record) => {
       const { choirMemberId, attendanceType, attendanceDate, attendanceStatus } = record;
       const member = choirMembers.find((m) => m.choirMemberId === choirMemberId);
@@ -234,11 +245,11 @@ exports.searchByName = async (req, res) => {
       return acc;
     }, {});
 
-    // Format data for response
+   
     const result = Object.values(groupedData).map((member) => {
       const { attendanceStatistics, totalPresent, totalAttendances } = member;
 
-      // Calculate percentages
+    
       Object.keys(attendanceStatistics).forEach((type) => {
         Object.keys(attendanceStatistics[type]).forEach((month) => {
           const monthStats = attendanceStatistics[type][month];
