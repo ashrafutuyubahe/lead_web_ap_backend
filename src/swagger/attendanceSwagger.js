@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /choir_manager/v1/attendances/markAttendence:
+ * /choir_manager/v1/attendaces/markAttendence:
  *   post:
  *     summary: Mark attendance for choir members
  *     description: Marks the attendance of choir members based on the provided data.
