@@ -20,21 +20,20 @@ exports.markAttendance = async (req, res) => {
     for (const entry of data) {
       let { attendanceType, ChoirMemberId, attendanceStatus } = entry;
 
-      // Uppercase the first letter of specific types
       if (attendanceType.toLowerCase() === "repetition") {
         attendanceType = "Repetition";
       } else if (attendanceType.toLowerCase() === "death") {
         attendanceType = "Death";
       }
 
-      // Check if the ChoirMember exists
+   
       const member = await choirMember.findByPk(ChoirMemberId);
       if (!member) {
         logger.warn(`Choir member with ID ${ChoirMemberId} not found.`);
         continue;
       }
 
-      // Perform a regular attendance check
+   
       try {
         await regularAttendanceCheck(io, ChoirMemberId);
       } catch (checkError) {
@@ -43,7 +42,7 @@ exports.markAttendance = async (req, res) => {
         );
       }
 
-      // Push valid attendance data
+     
       attendances.push({
         attendanceType,
         ChoirMemberId,
@@ -52,7 +51,7 @@ exports.markAttendance = async (req, res) => {
       });
     }
 
-    // Bulk create attendance entries
+    
     if (attendances.length > 0) {
       await AttendanceModel.bulkCreate(attendances);
       res.status(200).json({ message: "Attendance marked successfully." });
