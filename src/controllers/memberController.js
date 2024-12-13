@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer');
 const sequelize = require("../config/db");
 const choirMember = require("../models/choirMember");
 const logger = require("../utils/logger");
@@ -61,6 +62,40 @@ exports.getAllMembers = async (req, res) => {
 
 
 
+
+const sendMsg= (choirMemberEmail)=>{
+
+
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: true, 
+  auth: {
+    user: ADMIN_EMAIL, 
+    pass: ADMIN_EMAIL_PASSWORD,  
+  },
+});
+
+
+const mailOptions = {
+  from: process.env.ADMIN_EMAIL,
+  to: choirMemberEmail,
+  subject: 'Hello!',
+  text: 'This is a test email from Nodemailer.',
+};
+
+
+transporter.sendMail(mailOptions, (err, info) => {
+  if (err) {
+    console.error('Error:', err);
+  } else {
+    console.log('Email sent:', info.response);
+  }
+});
+
+
+}
 
 exports.uploadChoirMembers = async (req, res) => {
   if (!req.file) {
