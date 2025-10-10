@@ -34,11 +34,11 @@
 
 
 
-  // const io = socketIo(server, {
-  //   cors: {
-  //     origin: "*",
-  //   },
-  // });
+  const io = socketIo(server, {
+    cors: {
+      origin: "*",
+    },
+  });
 
   //api section
   app.use("/choir_manager/v1/auth", authRoutes);
