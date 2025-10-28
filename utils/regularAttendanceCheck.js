@@ -46,6 +46,7 @@ const checkRegularAbesnt = async function regularAttendanceCheck(io, memberId) {
       logger.info(
         `Punishment triggered for ChoirMemberId ${memberId} due to exceeding absence thresholds.`
       );
+
     }
   } catch (error) {
     console.error('Error checking attendance progress:', error);
