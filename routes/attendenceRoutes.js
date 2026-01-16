@@ -3,7 +3,6 @@ const router = express.Router();
 const { authMiddleware, authorize } = require("../middleware/authMIddleware");
 const attendenceController = require("../controllers/attendenceController");
 
-// Import Swagger documentation
 const attendanceSwagger = require("../swagger/attendanceSwagger");
 const statisticsSwagger = require("../swagger/statisticsSwagger");
 
