@@ -1,102 +1,113 @@
 const choirMember = require("../models/choirMember");
 const AttendanceModel = require("../models/attendenceModel");
-const AbsentChoirMember = require("../models/absentChoirMemberModel");
 const logger = require("../utils/logger");
 const { Op, Sequelize } = require("sequelize");
-const { QueryTypes } = require("sequelize");
+const emailService = require("../utils/emailService");
 
-const regularAttendanceCheck = require("../utils/regularAttendanceCheck");
-const io = require("../utils/io");
-
-
+const VALID_ATTENDANCE_TYPES = ['church', 'wedding', 'Repetition', 'Death'];
+const VALID_ATTENDANCE_STATUS = ['present', 'absent'];
 
 exports.markAttendance = async (req, res) => {
   const { data } = req.body;
 
+  if (!Array.isArray(data) || data.length === 0) {
+    return res.status(400).json({ error: "Valid attendance data array is required" });
+  }
+
   try {
     const attendances = [];
+    const errors = [];
     const currentDate = new Date();
 
-    for (const entry of data) {
+    for (let i = 0; i < data.length; i++) {
+      const entry = data[i];
       let { attendanceType, ChoirMemberId, attendanceStatus } = entry;
 
-      if (attendanceType.toLowerCase() === "repetition") {
-        attendanceType = "Repetition";
-      } else if (attendanceType.toLowerCase() === "death") {
-        attendanceType = "Death";
+      if (!ChoirMemberId || !attendanceType || !attendanceStatus) {
+        errors.push({ index: i, error: "Missing required fields" });
+        continue;
+      }
+
+      attendanceType = attendanceType.toLowerCase() === "repetition" ? "Repetition" :
+                       attendanceType.toLowerCase() === "death" ? "Death" : 
+                       attendanceType;
+
+      if (!VALID_ATTENDANCE_TYPES.includes(attendanceType)) {
+        errors.push({ index: i, error: `Invalid attendance type: ${attendanceType}` });
+        continue;
+      }
+
+      if (!VALID_ATTENDANCE_STATUS.includes(attendanceStatus.toLowerCase())) {
+        errors.push({ index: i, error: `Invalid status: ${attendanceStatus}` });
+        continue;
       }
 
       const member = await choirMember.findByPk(ChoirMemberId);
       if (!member) {
-        logger.warn(`Choir member with ID ${ChoirMemberId} not found.`);
+        errors.push({ index: i, memberId: ChoirMemberId, error: "Member not found" });
         continue;
       }
-
-    //   try {
-    //     await regularAttendanceCheck(io, ChoirMemberId);
-    //   } catch (checkError) {
-    //     logger.error(
-    //       `Error checking regular attendance for ChoirMemberId ${ChoirMemberId}: ${checkError.message}`
-    //     );
-    //   }
 
       attendances.push({
         attendanceType,
         ChoirMemberId,
         attendanceDate: currentDate,
-        attendanceStatus,
+        attendanceStatus: attendanceStatus.toLowerCase()
       });
     }
 
-    if (attendances.length > 0) {
-      const createdRecords = await AttendanceModel.bulkCreate(attendances);
-
-      // Automated Email Logic
-      // We need to process each marked attendance to check for streaks/alerts
-      for (const record of createdRecords) {
-          try {
-             const member = await choirMember.findByPk(record.ChoirMemberId);
-             if (!member || !member.email) continue;
-
-             // Fetch the last 2 records for this member and type, ordered by date descending
-             // calculated including the one we just made
-             const records = await AttendanceModel.findAll({
-                 where: { 
-                     ChoirMemberId: record.ChoirMemberId, 
-                     attendanceType: record.attendanceType 
-                 },
-                 order: [['attendanceDate', 'DESC']],
-                 limit: 2
-             });
-
-             if (records.length === 2) {
-                 const [latest, previous] = records;
-                 
-                // Ensure they are truly consecutive in terms of recorded sessions (which the query does by limit 2)
-                // We don't check dates to be strictly "yesterday" and "today" because sessions might be weekly.
-                // Just "last 2 sessions".
-                 
-                 if (latest.attendanceStatus === 'present' && previous.attendanceStatus === 'present') {
-                     const emailService = require("../utils/emailService");
-                     await emailService.sendAttendanceAlert(member.email, 'good_job', member.choirMemberFirstName);
-                 }
-                 else if (latest.attendanceStatus === 'absent' && previous.attendanceStatus === 'absent') {
-                     const emailService = require("../utils/emailService");
-                     await emailService.sendAttendanceAlert(member.email, 'improve', member.choirMemberFirstName);
-                 }
-             }
-          } catch (emailError) {
-              logger.error(`Error sending attendance email to member ${record.ChoirMemberId}:`, emailError);
-          }
-      }
-
-      res.status(200).json({ message: "Attendance marked successfully." });
-    } else {
-      res.status(400).json({ message: "No valid attendance data provided." });
+    if (attendances.length === 0) {
+      return res.status(400).json({ 
+        error: "No valid attendance records to process",
+        errors 
+      });
     }
+
+    const createdRecords = await AttendanceModel.bulkCreate(attendances);
+
+    const emailErrors = [];
+    for (const record of createdRecords) {
+      try {
+        const member = await choirMember.findByPk(record.ChoirMemberId);
+        if (!member?.email) continue;
+
+        const records = await AttendanceModel.findAll({
+          where: { 
+            ChoirMemberId: record.ChoirMemberId, 
+            attendanceType: record.attendanceType 
+          },
+          order: [['attendanceDate', 'DESC']],
+          limit: 2
+        });
+
+        if (records.length === 2) {
+          const [latest, previous] = records;
+          
+          if (latest.attendanceStatus === 'present' && previous.attendanceStatus === 'present') {
+            await emailService.sendAttendanceAlert(member.email, 'good_job', member.choirMemberFirstName);
+          } else if (latest.attendanceStatus === 'absent' && previous.attendanceStatus === 'absent') {
+            await emailService.sendAttendanceAlert(member.email, 'improve', member.choirMemberFirstName);
+          }
+        }
+      } catch (emailError) {
+        logger.error(`Email alert failed for member ${record.ChoirMemberId}:`, emailError);
+        emailErrors.push({ memberId: record.ChoirMemberId, error: "Email notification failed" });
+      }
+    }
+
+    logger.info(`Attendance marked: ${createdRecords.length} records created`);
+    res.status(200).json({ 
+      message: "Attendance marked successfully",
+      processed: createdRecords.length,
+      ...(errors.length > 0 && { errors }),
+      ...(emailErrors.length > 0 && { emailErrors })
+    });
   } catch (error) {
-    console.error("Error marking attendance:", error);
-    res.status(500).json({ error: "Server error, try again later." });
+    logger.error("Error marking attendance:", error);
+    res.status(500).json({ 
+      error: "Failed to mark attendance",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 

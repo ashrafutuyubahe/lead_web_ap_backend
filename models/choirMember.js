@@ -14,7 +14,7 @@ const choirMember= sequelize.define("ChoirMember",{
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: true, // Allow null for existing members, but enforce for invited ones logically
+    allowNull: true, 
     unique: true
   },
   password: {
