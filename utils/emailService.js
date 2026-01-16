@@ -10,16 +10,16 @@ const transporter = nodemailer.createTransport({
 });
 
 /**
- * Send an email
- * @param {string} to - Recipient email
- * @param {string} subject - Email subject
- * @param {string} text - Plain text body
- * @param {string} html - HTML body (optional)
+
+ * @param {string} to 
+ * @param {string} subject 
+ * @param {string} text 
+ * @param {string} html 
  */
 const sendEmail = async (to, subject, text, html) => {
   try {
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from:" Choir Manager",
       to,
       subject,
       text,
@@ -35,7 +35,7 @@ const sendEmail = async (to, subject, text, html) => {
 
 const sendInvitation = async (email, token, role) => {
   const subject = 'Invitation to Join Choir Manager';
-  // Use environment variable for frontend URL in production, simplistic default for now
+
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'; 
   const link = `${frontendUrl}/auth/setup?token=${token}`;
   

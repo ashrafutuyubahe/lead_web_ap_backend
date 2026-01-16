@@ -118,8 +118,7 @@ function generateJWT(user, role = 'admin') {
 
 exports.inviteMember = async (req, res) => {
   try {
-    // Only admins should be able to invite
-    // Assuming authMiddleware populates req.user correctly
+    
     if (req.user.role !== 'admin' && !req.user.adminId) { 
        return res.status(403).json({ error: "Access denied. Only admins can invite members." });
     }
