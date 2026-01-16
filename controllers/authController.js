@@ -42,27 +42,54 @@ exports.registerAdmin = async (req, res) => {
   }
 };
 
-exports.loginAdmin = async (req, res) => {
+exports.login = async (req, res) => {
   try {
-    const { adminEmail, adminPassword } = req.body;
+    const { email, password } = req.body;
 
-    const admin = await Admin.findOne({ where: { adminEmail } });
-    if (!admin || !(await bcrypt.compare(adminPassword, admin.adminPassword))) {
-      return res.status(401).json({ error: "Invalid email or password" });
+    // 1. Try to find an Admin
+    // Note: The frontend might send "email" but the Admin model expects "adminEmail"
+    // We should check if the user meant adminEmail in the body or just generic email.
+    // The request will likely send "email".
+    const admin = await Admin.findOne({ where: { adminEmail: email } });
+    if (admin) {
+        if (await bcrypt.compare(password, admin.adminPassword)) {
+            const token = generateJWT(admin, 'admin');
+            return res.json({ 
+                token,
+                user: {
+                    id: admin.id,
+                    name: admin.adminName,
+                    email: admin.adminEmail,
+                    role: 'admin'
+                }
+            });
+        }
     }
 
-    const token = generateJWT(admin);
-    res.json({ 
-      token,
-      user: {
-        id: admin.id,
-        name: admin.adminName,
-        email: admin.adminEmail,
-        role: 'admin'
-      }
-    });
+    // 2. If not admin, try to find a ChoirMember
+    const member = await ChoirMember.findOne({ where: { email } });
+    if (member) {
+        if (member.password && await bcrypt.compare(password, member.password)) {
+             const token = generateJWT(member, member.role);
+             return res.json({ 
+                token, 
+                user: {
+                    id: member.choirMemberId,
+                    firstName: member.choirMemberFirstName,
+                    lastName: member.choirMemberLastName,
+                    email: member.email,
+                    role: member.role,
+                    status: member.status
+                }
+            });
+        }
+    }
+
+    // 3. If neither found or password mismatch
+    return res.status(401).json({ error: "Invalid email or password" });
+
   } catch (err) {
-    logger.error("Error logging in admin:", err);
+    logger.error("Error logging in:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -203,33 +230,7 @@ exports.setupPassword = async (req, res) => {
     }
 };
 
-exports.loginMember = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const member = await ChoirMember.findOne({ where: { email } });
 
-        if (!member || !member.password || !(await bcrypt.compare(password, member.password))) {
-            return res.status(401).json({ error: "Invalid email or password" });
-        }
-
-        const token = generateJWT(member, member.role);
-        res.json({ 
-            token, 
-            user: {
-                id: member.choirMemberId,
-                firstName: member.choirMemberFirstName,
-                lastName: member.choirMemberLastName,
-                email: member.email,
-                role: member.role,
-                status: member.status
-            }
-        });
-
-    } catch (err) {
-        logger.error("Error logging in member:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
 
 exports.getGreetings = async (req, res) => {
   return res.status(200).json({ message: "Helloo there.." });

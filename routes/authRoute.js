@@ -7,10 +7,10 @@ const registerSwagger = require('../swagger/register&loginSwagger');
 
 router.post('/register', authController.registerAdmin);
 
-router.post('/login', authController.loginAdmin);
-router.post('/member/signin', authController.loginMember); // Differentiate path
+router.post('/login', authController.login);
+// router.post('/member/signin', authController.loginMember); // Deprecated in favor of unified /login
 const { authMiddleware, authorize } = require("../middleware/authMIddleware");
-router.post('/invite', authMiddleware, authorize('admin'), authController.inviteMember); // Admin only
+router.post('/invite', authMiddleware, authorize('admin'), authController.inviteMember);
 
 router.post("/logout",authController.logOutAdmin);
 router.get("/getGreetings",authController.getGreetings);
