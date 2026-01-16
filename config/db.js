@@ -6,10 +6,10 @@ require('dotenv').config();
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',  
   dialectOptions: {
-    ssl: {
-      require: true,      
-      rejectUnauthorized: false,  
-    },
+    // ssl: {
+    //   require: true,      
+    //   rejectUnauthorized: false,  
+    // },
   },
 });
 
@@ -17,7 +17,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 async function connectToDatabase() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
     logger.info("The connection to the database is set and all models were synchronized successfully.");
   } catch (error) {
     logger.error("Failed to connect to the database!", error);

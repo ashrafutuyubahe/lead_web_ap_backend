@@ -12,6 +12,25 @@ const choirMember= sequelize.define("ChoirMember",{
     primaryKey:true,
     autoIncrement:true
   },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: true, // Allow null for existing members, but enforce for invited ones logically
+    unique: true
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  role: {
+    type: DataTypes.ENUM,
+    values: ['member', 'attendance_taker', 'admin'],
+    defaultValue: 'member'
+  },
+  status: {
+    type: DataTypes.ENUM,
+    values: ['active', 'inactive'],
+    defaultValue: 'active'
+  },
   choirMemberFirstName:{
     type: DataTypes.STRING,
     allowNull: false,
@@ -28,7 +47,12 @@ const choirMember= sequelize.define("ChoirMember",{
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-  }},{
+  },
+  verificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
+}, {
     timestamps:true
   });
 

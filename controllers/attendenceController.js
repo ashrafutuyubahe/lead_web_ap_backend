@@ -26,23 +26,20 @@ exports.markAttendance = async (req, res) => {
         attendanceType = "Death";
       }
 
-   
       const member = await choirMember.findByPk(ChoirMemberId);
       if (!member) {
         logger.warn(`Choir member with ID ${ChoirMemberId} not found.`);
         continue;
       }
 
-   
-      try {
-        await regularAttendanceCheck(io, ChoirMemberId);
-      } catch (checkError) {
-        logger.error(
-          `Error checking regular attendance for ChoirMemberId ${ChoirMemberId}: ${checkError.message}`
-        );
-      }
+    //   try {
+    //     await regularAttendanceCheck(io, ChoirMemberId);
+    //   } catch (checkError) {
+    //     logger.error(
+    //       `Error checking regular attendance for ChoirMemberId ${ChoirMemberId}: ${checkError.message}`
+    //     );
+    //   }
 
-     
       attendances.push({
         attendanceType,
         ChoirMemberId,
@@ -51,9 +48,48 @@ exports.markAttendance = async (req, res) => {
       });
     }
 
-    
     if (attendances.length > 0) {
-      await AttendanceModel.bulkCreate(attendances);
+      const createdRecords = await AttendanceModel.bulkCreate(attendances);
+
+      // Automated Email Logic
+      // We need to process each marked attendance to check for streaks/alerts
+      for (const record of createdRecords) {
+          try {
+             const member = await choirMember.findByPk(record.ChoirMemberId);
+             if (!member || !member.email) continue;
+
+             // Fetch the last 2 records for this member and type, ordered by date descending
+             // calculated including the one we just made
+             const records = await AttendanceModel.findAll({
+                 where: { 
+                     ChoirMemberId: record.ChoirMemberId, 
+                     attendanceType: record.attendanceType 
+                 },
+                 order: [['attendanceDate', 'DESC']],
+                 limit: 2
+             });
+
+             if (records.length === 2) {
+                 const [latest, previous] = records;
+                 
+                // Ensure they are truly consecutive in terms of recorded sessions (which the query does by limit 2)
+                // We don't check dates to be strictly "yesterday" and "today" because sessions might be weekly.
+                // Just "last 2 sessions".
+                 
+                 if (latest.attendanceStatus === 'present' && previous.attendanceStatus === 'present') {
+                     const emailService = require("../utils/emailService");
+                     await emailService.sendAttendanceAlert(member.email, 'good_job', member.choirMemberFirstName);
+                 }
+                 else if (latest.attendanceStatus === 'absent' && previous.attendanceStatus === 'absent') {
+                     const emailService = require("../utils/emailService");
+                     await emailService.sendAttendanceAlert(member.email, 'improve', member.choirMemberFirstName);
+                 }
+             }
+          } catch (emailError) {
+              logger.error(`Error sending attendance email to member ${record.ChoirMemberId}:`, emailError);
+          }
+      }
+
       res.status(200).json({ message: "Attendance marked successfully." });
     } else {
       res.status(400).json({ message: "No valid attendance data provided." });

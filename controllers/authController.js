@@ -1,4 +1,7 @@
 const Admin = require("../models/admin");
+const ChoirMember = require("../models/choirMember");
+const emailService = require("../utils/emailService");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { Op, Sequelize } = require("sequelize");
 const bcrypt = require("bcrypt");
@@ -49,7 +52,15 @@ exports.loginAdmin = async (req, res) => {
     }
 
     const token = generateJWT(admin);
-    res.json({ token });
+    res.json({ 
+      token,
+      user: {
+        id: admin.id,
+        name: admin.adminName,
+        email: admin.adminEmail,
+        role: 'admin'
+      }
+    });
   } catch (err) {
     logger.error("Error logging in admin:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -99,11 +110,127 @@ exports.logOutAdmin = async (req, res) => {
 };
 
 
-function generateJWT(admin) {
-  return jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET, {
+function generateJWT(user, role = 'admin') {
+  return jwt.sign({ userId: user.id || user.choirMemberId, role }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
 }
+
+exports.inviteMember = async (req, res) => {
+  try {
+    // Only admins should be able to invite
+    // Assuming authMiddleware populates req.user correctly
+    if (req.user.role !== 'admin' && !req.user.adminId) { 
+       return res.status(403).json({ error: "Access denied. Only admins can invite members." });
+    }
+
+    const { email, role, firstName, lastName, gender, phoneNumber } = req.body;
+    
+    // Check if member already exists (by email)
+    let member = await ChoirMember.findOne({ where: { email } });
+    if (member) {
+        return res.status(400).json({ error: "Member with this email already exists." });
+    }
+
+    // Generate secure verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    
+    // FOR TESTING ONLY: Log the token/link so the user can test without email
+    logger.info(`[TESTING] Invitation Token for ${email}: ${verificationToken}`);
+    logger.info(`[TESTING] Link: http://localhost:5173/auth/setup?token=${verificationToken}`);
+
+    // Create the member with minimal info and "inactive" status until they set password
+    const newMember = await ChoirMember.create({
+        choirMemberFirstName: firstName || 'Invited',
+        choirMemberLastName: lastName || 'User',
+        choirMemberGender: gender || 'Not Specified',
+        choirMemberPhoneNumber: phoneNumber || '0000000000', // needs unique logic ideally
+        email,
+        password: null, // No password yet
+        verificationToken,
+        role: role || 'attendance_taker',
+        status: 'inactive' // Set to inactive until they set password
+    });
+
+    // Send email with link
+    await emailService.sendInvitation(email, verificationToken, role);
+
+    res.status(201).json({ message: "Invitation sent successfully", member: newMember });
+
+  } catch (err) {
+    logger.error("Error inviting member:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.verifyInvitation = async (req, res) => {
+    try {
+        const { token } = req.body;
+        if (!token) return res.status(400).json({ error: "Token is required" });
+
+        const member = await ChoirMember.findOne({ where: { verificationToken: token } });
+        if (!member) {
+            return res.status(400).json({ error: "Invalid or expired invitation token." });
+        }
+
+        res.status(200).json({ email: member.email, firstName: member.choirMemberFirstName });
+    } catch (err) {
+        logger.error("Error verifying invitation:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.setupPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        const member = await ChoirMember.findOne({ where: { verificationToken: token } });
+
+        if (!member) {
+            return res.status(400).json({ error: "Invalid token." });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        await member.update({
+            password: hashedPassword,
+            verificationToken: null, // Clear token
+            status: 'active'
+        });
+
+        res.status(200).json({ message: "Password set successfully. You can now login." });
+    } catch (err) {
+        logger.error("Error setting password:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+exports.loginMember = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const member = await ChoirMember.findOne({ where: { email } });
+
+        if (!member || !member.password || !(await bcrypt.compare(password, member.password))) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        const token = generateJWT(member, member.role);
+        res.json({ 
+            token, 
+            user: {
+                id: member.choirMemberId,
+                firstName: member.choirMemberFirstName,
+                lastName: member.choirMemberLastName,
+                email: member.email,
+                role: member.role,
+                status: member.status
+            }
+        });
+
+    } catch (err) {
+        logger.error("Error logging in member:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
 exports.getGreetings = async (req, res) => {
   return res.status(200).json({ message: "Helloo there.." });

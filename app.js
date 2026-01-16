@@ -8,6 +8,8 @@
   const authRoutes = require("./routes/authRoute");
   const attendendenceRoutes= require("./routes/attendenceRoutes");
   const monitorAttendance= require("./utils/monitorAttendance");
+
+
   const memberRoutes= require("./routes/memberRoutes")
   const logger = require("./utils/logger");
   const swaggerUi = require('swagger-ui-express');
@@ -44,8 +46,9 @@
   app.use("/choir_manager/v1/auth", authRoutes);
   app.use("/choir_manager/v1/attendaces",attendendenceRoutes);
   app.use("/choir_manager/v1/member",memberRoutes);
+  app.use("/choir_manager/v1/announcements", require("./routes/announcementsRoutes"));
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+ 
   // setInterval(() => {
   //   monitorAttendance(io);
   // }, 300000);

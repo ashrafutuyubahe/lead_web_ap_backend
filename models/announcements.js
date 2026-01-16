@@ -2,6 +2,11 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
 
 const Announcement = sequelize.define("Announcements", {
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "Announcement"
+  },
   choirMemberId: {
     type: DataTypes.INTEGER,
     allowNull: false,
