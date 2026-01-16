@@ -232,6 +232,22 @@ exports.setupPassword = async (req, res) => {
 
 
 
+
+exports.getInvitations = async (req, res) => {
+    try {
+        const members = await ChoirMember.findAll({
+            attributes: ['choirMemberId', 'choirMemberFirstName', 'choirMemberLastName', 'email', 'role', 'status', 'createdAt']
+        });
+        
+        // Map status to user-friendly "accepted" or "pending" if desired, or just return as is.
+        // Frontend can interpret 'active' as Accepted and 'inactive' as Pending/Invited.
+        res.status(200).json(members);
+    } catch (err) {
+        logger.error("Error fetching invitations:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 exports.getGreetings = async (req, res) => {
   return res.status(200).json({ message: "Helloo there.." });
 };
