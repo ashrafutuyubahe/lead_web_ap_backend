@@ -28,17 +28,22 @@
 
   const server = http.createServer(app);
 
+  const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+
   app.use(cors({
     credentials: true,
-    origin: "*",
-    methods:"GET,POST,PUT,DELETE"
+    origin: corsOrigin,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   }));
 
 
 
   const io = socketIo(server, {
     cors: {
-      origin: "*",
+      origin: corsOrigin,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      credentials: true
     },
   });
 

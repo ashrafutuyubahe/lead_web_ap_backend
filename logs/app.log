@@ -1805,3 +1805,50 @@ notNull Violation: ChoirMember.choirMemberPhoneNumber cannot be null
 2026-01-16 11:17:32 [info]: The connection to the database is set and all models were synchronized successfully.
 2026-01-16 11:18:05 [info]: WebSocket  and server are both running on port 3000...
 2026-01-16 11:18:06 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-16 11:18:22 [info]: WebSocket  and server are both running on port 3000...
+2026-01-16 11:18:22 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-16 11:34:08 [info]: WebSocket  and server are both running on port 3000...
+2026-01-16 11:34:09 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-16 11:35:15 [info]: Admin login: admin1@example.com
+2026-01-16 12:43:31 [info]: WebSocket  and server are both running on port 3000...
+2026-01-16 12:43:33 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-16 12:44:23 [info]: Admin login: admin1@example.com
+2026-01-16 12:49:58 [info]: WebSocket  and server are both running on port 3000...
+2026-01-16 12:50:01 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-17 20:21:28 [info]: WebSocket  and server are both running on port 3000...
+2026-01-17 20:21:31 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-17 20:26:37 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-17 20:27:38 [info]: Admin login: admin1@example.com
+2026-01-17 20:36:21 [info]: WebSocket  and server are both running on port 3000...
+2026-01-17 20:36:22 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-17 20:37:00 [info]: WebSocket  and server are both running on port 3000...
+2026-01-17 20:37:01 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-17 20:41:49 [info]: Admin login: admin1@example.com
+2026-01-17 20:45:54 [info]: Admin login: admin1@example.com
+2026-01-17 20:50:35 [info]: Admin login: admin1@example.com
+2026-01-17 20:51:27 [info]: Admin login: admin1@example.com
+2026-01-17 20:52:07 [info]: Admin login: admin1@example.com
+2026-01-17 20:52:22 [info]: Member deleted: 7 (0 attendance records, 0 announcements removed)
+2026-01-17 20:52:24 [info]: Member deleted: 8 (0 attendance records, 0 announcements removed)
+2026-01-17 20:53:01 [info]: Member deleted: 10 (0 attendance records, 0 announcements removed)
+2026-01-17 20:53:05 [info]: Member deleted: 11 (0 attendance records, 0 announcements removed)
+2026-01-17 20:53:27 [info]: Member deleted: 3 (0 attendance records, 1 announcements removed)
+2026-01-17 20:54:22 [info]: Member updated: 9
+2026-01-17 20:54:40 [info]: Member updated: 9
+2026-01-17 20:54:53 [info]: Member updated: 9
+2026-01-17 20:55:11 [info]: Member updated: 9
+2026-01-17 20:56:11 [info]: Invitation token for ntare@gmai.com: 2bc4f433891185c2c4aa084d1e382008d696a3a8c1c90aeece50e947bd645473
+2026-01-17 20:56:16 [info]: Email sent to ntare@gmai.com: 250 2.0.0 OK  1768676174 ffacd0b85a97d-4356997e6dasm12606141f8f.32 - gsmtp
+2026-01-17 20:56:16 [info]: Member invited: ntare@gmai.com
+2026-01-17 20:56:47 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768676205 5b1f17b1804b1-4801e86c1b2sm103805895e9.3 - gsmtp
+2026-01-17 20:56:48 [info]: Email sent to hackim@gmail.com: 250 2.0.0 OK  1768676206 ffacd0b85a97d-43569997f41sm11945458f8f.38 - gsmtp
+2026-01-17 20:56:48 [info]: Announcement sent to 2 members
+2026-01-17 20:57:11 [info]: Attendance marked: 3 records created
+2026-01-17 21:07:38 [info]: Admin login: admin1@example.com
+2026-01-17 21:09:11 [info]: Admin login: admin1@example.com
+2026-01-17 21:10:14 [error]: Authentication failed: jwt expired
+2026-01-17 21:10:30 [info]: Invitation token for ashraftuyubahe001@gmail.com: 65d6e16432ee010b14adcc913083ee9c2c233cea0a165401ce2d56763e041999
+2026-01-17 21:10:36 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768677034 ffacd0b85a97d-435699982aasm13450356f8f.42 - gsmtp
+2026-01-17 21:10:36 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-17 21:11:50 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-17 21:12:01 [info]: Member login: ashraftuyubahe001@gmail.com
