@@ -1852,3 +1852,45 @@ notNull Violation: ChoirMember.choirMemberPhoneNumber cannot be null
 2026-01-17 21:10:36 [info]: Member invited: ashraftuyubahe001@gmail.com
 2026-01-17 21:11:50 [info]: Password set for member: ashraftuyubahe001@gmail.com
 2026-01-17 21:12:01 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-17 21:20:20 [info]: Admin login: admin1@example.com
+2026-01-17 21:21:52 [error]: Authentication failed: jwt expired
+2026-01-17 21:26:39 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-17 21:37:16 [info]: Admin login: admin1@example.com
+2026-01-17 21:39:24 [info]: Member deleted: 12 (0 attendance records, 0 announcements removed)
+2026-01-17 21:39:32 [info]: Member deleted: 13 (0 attendance records, 0 announcements removed)
+2026-01-17 21:40:44 [info]: WebSocket  and server are both running on port 3000...
+2026-01-17 21:40:45 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-17 21:40:48 [info]: Admin login: admin1@example.com
+2026-01-17 21:42:53 [info]: Admin login: admin1@example.com
+2026-01-17 21:43:07 [info]: Invitation token for ashraftuyubahe001@gmail.com: 9d2dcb181e819597a27237da73623249f9c7b30def75ccf3308e896d8434fbc8
+2026-01-17 21:43:12 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768678990 ffacd0b85a97d-4356992211dsm12859388f8f.7 - gsmtp
+2026-01-17 21:43:12 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-17 21:43:34 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-17 21:43:52 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-17 21:44:55 [info]: Admin login: admin1@example.com
+2026-01-17 21:45:23 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-17 21:45:59 [error]: Authentication failed: Member not found
+2026-01-17 21:45:59 [error]: Authentication failed: Member not found
+2026-01-17 21:45:59 [error]: Authentication failed: Member not found
+2026-01-17 21:45:59 [error]: Authentication failed: Member not found
+2026-01-17 21:46:00 [error]: Authentication failed: Member not found
+2026-01-17 21:46:00 [error]: Authentication failed: Member not found
+2026-01-17 21:46:32 [info]: Admin login: admin1@example.com
+2026-01-17 21:46:46 [info]: Invitation token for ashraftuyubahe001@gmail.com: 3a0ec34d4a13c6258f03be1a06e1464cbdbb8dd8ca484c669e3e1022ca3788a3
+2026-01-17 21:46:51 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768679210 ffacd0b85a97d-4356996cefdsm12435139f8f.24 - gsmtp
+2026-01-17 21:46:51 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-17 21:47:24 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-17 21:52:29 [info]: Admin login: admin1@example.com
+2026-01-17 21:52:37 [info]: Invitation token for ashraftuyubahe001@gmail.com: f298ec40b7ca7ac6b2d60669e29a63fa45d7711dec1f4349120bd45283b23772
+2026-01-17 21:52:41 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768679559 5b1f17b1804b1-4801e8c9cbcsm107038355e9.12 - gsmtp
+2026-01-17 21:52:41 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-17 21:52:57 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-17 21:55:38 [info]: Invitation token for ashraftuyubahe001@gmail.com: eddd0cd3b4c4b9d8ca53f6fe1327918ad5c0ae6471573583c6e2639a4d58341d
+2026-01-17 21:55:42 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768679740 5b1f17b1804b1-4801e9ebc1bsm46862655e9.5 - gsmtp
+2026-01-17 21:55:42 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-17 21:55:59 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-17 21:56:50 [info]: Admin login: admin1@example.com
+2026-01-17 21:56:57 [info]: Invitation token for ashraftuyubahe001@gmail.com: c12c43c75bc72f4670ba57326ed310b0b4c50b0b8113f0f6e9e211609f8d1a0f
+2026-01-17 21:57:00 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1768679819 ffacd0b85a97d-4356992211dsm12915961f8f.7 - gsmtp
+2026-01-17 21:57:00 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-17 21:57:22 [info]: Password set for member: ashraftuyubahe001@gmail.com

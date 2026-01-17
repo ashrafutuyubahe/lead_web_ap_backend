@@ -89,3 +89,21 @@ exports.getAnnouncements = async (req, res) => {
     });
   }
 };
+
+exports.deleteAllAnnouncements = async (req, res) => {
+  try {
+    const deletedCount = await Announcement.destroy({ where: {} });
+
+    logger.info(`All announcements deleted: ${deletedCount} records`);
+    res.status(200).json({ 
+      message: "All announcements deleted successfully",
+      deletedCount
+    });
+  } catch (error) {
+    logger.error("Error deleting all announcements:", error);
+    res.status(500).json({ 
+      error: "Failed to delete announcements",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};

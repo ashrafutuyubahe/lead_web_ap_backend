@@ -5,5 +5,6 @@ const { authMiddleware, authorize } = require("../middleware/authMIddleware");
 
 router.post("/send", authMiddleware, authorize('admin'), announcementsController.createAnnouncement);
 router.get("/", authMiddleware, authorize('admin', 'attendance_taker', 'member'), announcementsController.getAnnouncements);
+router.delete("/", authMiddleware, authorize('admin'), announcementsController.deleteAllAnnouncements);
 
 module.exports = router;

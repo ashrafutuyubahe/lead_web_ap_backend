@@ -9,7 +9,7 @@ const statisticsSwagger = require("../swagger/statisticsSwagger");
 
 router.post('/markAttendence', authMiddleware, authorize('admin', 'attendance_taker'), attendenceController.markAttendance);
 
-router.get("/getAttendanceStatistics", authMiddleware, authorize('admin'), attendenceController.getAttendanceStatistics);
+router.get("/getAttendanceStatistics", authMiddleware, authorize('admin', 'attendance_taker'), attendenceController.getAttendanceStatistics);
 router.get("/search", authMiddleware, authorize('admin', 'attendance_taker'), attendenceController.searchByName);
 
 module.exports = router;
