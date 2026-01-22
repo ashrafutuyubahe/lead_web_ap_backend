@@ -56,9 +56,4 @@ const choirMember= sequelize.define("ChoirMember",{
     timestamps:true
   });
 
-
-  module.exports= choirMember
-
-
-
-  
+module.exports= choirMember

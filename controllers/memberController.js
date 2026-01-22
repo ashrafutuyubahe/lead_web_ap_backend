@@ -31,7 +31,7 @@ exports.addMember = async (req, res) => {
     return res.status(400).json({ error: "Invalid email format" });
   }
 
-  if (!validatePhoneNumber(choirMemberPhoneNumber)) {
+  if (!validatePhoneNumberMember(choirMemberPhoneNumber)) {
     return res.status(400).json({ error: "Invalid phone number format" });
   }
 
@@ -104,6 +104,12 @@ function validatePhoneNumber(phone) {
  
   return /^\d{9}$/.test(phone);
 }
+
+function validatePhoneNumberMember(phone) {
+ 
+  return /^\d{10}$/.test(phone);
+}
+
 
 
 exports.uploadChoirMembers = async (req, res) => {
@@ -233,7 +239,7 @@ exports.updateMember = async (req, res) => {
     return res.status(400).json({ error: "Invalid email format" });
   }
 
-  if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+  if (phoneNumber && !validatePhoneNumberMember(phoneNumber)) {
     return res.status(400).json({ error: "Invalid phone number format" });
   }
 

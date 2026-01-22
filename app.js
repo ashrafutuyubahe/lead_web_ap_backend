@@ -1,24 +1,19 @@
-  const express = require("express");
-  const http = require("http");
-  const socketIo = require("socket.io");
-  const dotenv = require("dotenv");
-  dotenv.config();
-  const PORT = process.env.PORT || 3000;
-  const connectDB = require("./config/db");
-  const authRoutes = require("./routes/authRoute");
-  const attendendenceRoutes= require("./routes/attendenceRoutes");
-  const monitorAttendance= require("./utils/monitorAttendance");
-
-
-  const memberRoutes= require("./routes/memberRoutes")
-  const logger = require("./utils/logger");
-  const swaggerUi = require('swagger-ui-express');
-  const swaggerSpec = require('./config/swagger'); 
-  const cors= require("cors");
-
-
-  
-
+  require('./models'); // Initialize associations
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const dotenv = require("dotenv");
+dotenv.config();
+const PORT = process.env.PORT || 3000;
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoute");
+const attendendenceRoutes= require("./routes/attendenceRoutes");
+const monitorAttendance= require("./utils/monitorAttendance");
+const memberRoutes= require("./routes/memberRoutes")
+const logger = require("./utils/logger");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger'); 
+const cors= require("cors");
 
 
 

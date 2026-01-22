@@ -1,11 +1,8 @@
-const choirMember = require("../models/choirMember");
-const AttendanceModel = require("../models/attendenceModel");
+const { Op } = require("sequelize");
+const { AttendanceModel, choirMember } = require("../models");
+const { VALID_ATTENDANCE_TYPES, VALID_ATTENDANCE_STATUS } = require("../utils/constants");
 const logger = require("../utils/logger");
-const { Op, Sequelize } = require("sequelize");
 const emailService = require("../utils/emailService");
-
-const VALID_ATTENDANCE_TYPES = ['church', 'wedding', 'Repetition', 'Death'];
-const VALID_ATTENDANCE_STATUS = ['present', 'absent'];
 
 exports.markAttendance = async (req, res) => {
   const { data } = req.body;
@@ -328,5 +325,81 @@ exports.searchByName = async (req, res) => {
     res.status(500).json({
       message: "Server error, try again later.",
     });
+  }
+};
+
+exports.downloadAttendanceReport = async (req, res) => {
+  try {
+    const { type = 'church' } = req.query;
+    const attendanceType = type.toLowerCase();
+
+    console.log(`Download request for type: "${type}" -> normalized to: "${attendanceType}"`);
+    console.log('VALID_ATTENDANCE_TYPES:', VALID_ATTENDANCE_TYPES);
+
+    if (!VALID_ATTENDANCE_TYPES.includes(attendanceType)) {
+      console.log(`Invalid type: "${attendanceType}". Valid types:`, VALID_ATTENDANCE_TYPES);
+      return res.status(400).json({ error: `Invalid attendance type. Must be one of: ${VALID_ATTENDANCE_TYPES.join(', ')}` });
+    }
+
+    console.log(`Using database type: "${attendanceType}"`);
+
+    const attendanceRecords = await AttendanceModel.findAll({
+      where: { attendanceType },
+      include: [{
+        model: choirMember,
+        as: 'ChoirMember',
+        attributes: ['choirMemberFirstName', 'choirMemberLastName', 'choirMemberGender', 'choirMemberPhoneNumber']
+      }],
+      order: [['attendanceDate', 'DESC']]
+    });
+
+    console.log(`Found ${attendanceRecords.length} attendance records for type: ${attendanceType}`); // Debug
+
+    if (attendanceRecords.length === 0) {
+      return res.status(404).json({ error: `No attendance records found for type: ${attendanceType}` });
+    }
+
+    // Build CSV rows
+    const csvRows = [];
+    csvRows.push('Attendance ID,Type,Status,Date,Member ID,First Name,Last Name,Gender,Phone');
+
+    attendanceRecords.forEach((record, index) => {
+      const member = record.ChoirMember;
+      console.log(`Processing record ${index + 1}:`, { 
+        attendanceId: record.attendanceId, 
+        attendanceType: record.attendanceType, 
+        attendanceStatus: record.attendanceStatus, 
+        attendanceDate: record.attendanceDate,
+        choirMemberId: record.choirMemberId,
+        hasMember: !!member 
+      });
+
+      const attendanceId = record.attendanceId || '';
+      const type = record.attendanceType || '';
+      const status = record.attendanceStatus || '';
+      const date = new Date(record.attendanceDate).toLocaleDateString();
+      const memberId = record.choirMemberId || '';
+      const firstName = member?.choirMemberFirstName || '';
+      const lastName = member?.choirMemberLastName || '';
+      const gender = member?.choirMemberGender || '';
+      const phone = member?.choirMemberPhoneNumber || '';
+
+      console.log('CSV values:', { attendanceId, type, status, date, memberId, firstName, lastName, gender, phone });
+
+      const csvRow = `"${attendanceId}","${type}","${status}","${date}","${memberId}","${firstName}","${lastName}","${gender}","${phone}"`;
+      console.log(`Adding CSV row: ${csvRow}`);
+      csvRows.push(csvRow);
+    });
+
+    console.log(`CSV rows count: ${csvRows.length - 1}`); // Debug: number of data rows
+
+    const csv = csvRows.join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="attendance-report-${attendanceType}-${new Date().toISOString().split('T')[0]}.csv"`);
+    res.status(200).send(csv);
+  } catch (error) {
+    console.error("Error downloading attendance report:", error);
+    res.status(500).json({ error: "Failed to generate report. Please try again later." });
   }
 };

@@ -11,5 +11,6 @@ router.post('/markAttendence', authMiddleware, authorize('admin', 'attendance_ta
 
 router.get("/getAttendanceStatistics", authMiddleware, authorize('admin', 'attendance_taker'), attendenceController.getAttendanceStatistics);
 router.get("/search", authMiddleware, authorize('admin', 'attendance_taker'), attendenceController.searchByName);
+router.get("/download-report", authMiddleware, authorize('admin', 'attendance_taker'), attendenceController.downloadAttendanceReport);
 
 module.exports = router;
