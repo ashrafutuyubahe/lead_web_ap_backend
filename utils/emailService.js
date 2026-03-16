@@ -65,9 +65,32 @@ const sendAttendanceAlert = async (email, type, firstName) => {
   }
 };
 
+const sendWeeklyAttendanceMessage = async (email, level, fullName) => {
+  let subject = 'Raporo y\'icyumweru y\'ubwitabire';
+  let text = '';
+
+  if (level === 'high') {
+    text = `Dear ${fullName}, Korali Ishema Ryacu iragushimira ubwitabire bwabwe bwiza.Imana iguhe umugisha`;
+  } else if (level === 'medium') {
+    text = `Dear ${fullName},Korali Ishema Ryacu iragushishikariza kwitabrira ibikorwa iba yateguye murakoze`;
+  }
+
+  if (text) {
+    await sendEmail(email, subject, text);
+  }
+};
+
+const sendMonthlyAbsenceWarning = async (email, fullName) => {
+  const subject = 'Itangazo ry\'ukwezi ku bwitabire';
+  const text = `Dear ${fullName} ,Gusiba kwawe birakabije.Korali Ishema Ryacu irakwibutsa ko ugeze igihe cyo gufatirwa ibihano`;
+  await sendEmail(email, subject, text);
+};
+
 module.exports = {
   sendEmail,
   sendInvitation,
   sendAnnouncement,
-  sendAttendanceAlert
+  sendAttendanceAlert,
+  sendWeeklyAttendanceMessage,
+  sendMonthlyAbsenceWarning,
 };

@@ -1969,3 +1969,78 @@ notNull Violation: ChoirMember.choirMemberPhoneNumber cannot be null
 2026-01-22 07:52:24 [info]: The connection to the database is set and all models were synchronized successfully.
 2026-01-22 07:57:53 [info]: WebSocket  and server are both running on port 3000...
 2026-01-22 07:57:54 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:18:10 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:18:12 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:22:37 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:22:38 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:22:54 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:22:56 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:24:16 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:24:21 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:24:23 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:24:47 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:24:49 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:26:40 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:26:41 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:29:52 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:29:54 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 08:36:24 [info]: WebSocket  and server are both running on port 3000...
+2026-01-22 08:36:26 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-01-22 13:17:04 [info]: Admin login: admin1@example.com
+2026-01-22 13:17:11 [info]: Member deleted: 18 (0 attendance records, 0 announcements removed)
+2026-01-22 13:17:30 [info]: Member updated: 19
+2026-01-22 13:17:49 [info]: Bulk upload: 1 created, 1 duplicates, 0 errors
+2026-01-22 13:18:04 [info]: Attendance marked: 3 records created
+2026-01-22 13:18:12 [info]: Invitation token for ashraftuyubahe001@gmail.com: 8435526458ee5b2312d19c138bc3e8035904084728b6f6a5a11c7ff140228207
+2026-01-22 13:18:18 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1769080697 5b1f17b1804b1-4804704b89bsm57534885e9.9 - gsmtp
+2026-01-22 13:18:18 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-22 13:18:47 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-22 13:18:57 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-22 13:21:39 [info]: Admin registered: tuyubaheashafu2023@gmail.com
+2026-01-22 13:24:54 [info]: Admin login: admin1@example.com
+2026-01-22 13:26:17 [info]: Admin registered: nemmy59@gmail.com
+2026-01-22 13:26:53 [info]: Admin login: nemmy59@gmail.com
+2026-01-22 13:32:06 [info]: Email sent to asd@gmail.com: 250 2.0.0 OK  1769081525 5b1f17b1804b1-48045f9a45asm34372725e9.3 - gsmtp
+2026-01-22 13:32:06 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1769081525 ffacd0b85a97d-4358f138e26sm19359618f8f.17 - gsmtp
+2026-01-22 13:32:06 [info]: Email sent to jimyy@gmail.com: 250 2.0.0 OK  1769081525 ffacd0b85a97d-43596291e0asm15503605f8f.15 - gsmtp
+2026-01-22 13:32:07 [info]: Email sent to jim@gmail.com: 250 2.0.0 OK  1769081526 ffacd0b85a97d-4356997e6dasm45663866f8f.32 - gsmtp
+2026-01-22 13:32:07 [info]: Announcement sent to 4 members
+2026-01-22 13:32:27 [info]: All announcements deleted: 2 records
+2026-01-22 13:33:05 [info]: Member deleted: 22 (0 attendance records, 0 announcements removed)
+2026-01-22 13:33:07 [info]: Member deleted: 21 (0 attendance records, 0 announcements removed)
+2026-01-22 13:33:09 [info]: Member deleted: 19 (0 attendance records, 0 announcements removed)
+2026-01-22 16:52:57 [info]: Bulk upload: 2 created, 0 duplicates, 0 errors
+2026-01-22 16:54:07 [info]: Member updated: 23
+2026-01-22 16:54:13 [info]: Member deleted: 25 (0 attendance records, 0 announcements removed)
+2026-01-22 16:54:42 [info]: Attendance marked: 2 records created
+2026-01-22 16:56:19 [info]: Member deleted: 24 (0 attendance records, 0 announcements removed)
+2026-01-22 16:56:21 [info]: Member deleted: 23 (0 attendance records, 0 announcements removed)
+2026-01-22 16:56:53 [info]: Invitation token for ashraftuyubahe001@gmail.com: 7b3a9ffac61f1f48027eb645d3c781844853c769b7e24c0cb25eb588b202ffba
+2026-01-22 16:56:56 [info]: Email sent to ashraftuyubahe001@gmail.com: 250 2.0.0 OK  1769093815 ffacd0b85a97d-43597719d1fsm16285423f8f.23 - gsmtp
+2026-01-22 16:56:56 [info]: Member invited: ashraftuyubahe001@gmail.com
+2026-01-22 16:57:58 [info]: Password set for member: ashraftuyubahe001@gmail.com
+2026-01-22 16:58:13 [info]: Member login: ashraftuyubahe001@gmail.com
+2026-01-22 16:58:37 [info]: Attendance marked: 1 records created
+2026-01-22 17:05:32 [info]: Admin login: admin1@example.com
+2026-03-13 16:32:58 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:33:01 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-03-13 16:33:24 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:33:26 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-03-13 16:33:55 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:33:57 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-03-13 16:33:58 [info]: Admin registered: ashraftuyubahe001@gmail.com
+2026-03-13 16:34:08 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:34:10 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-03-13 16:34:21 [info]: Admin login: ashraftuyubahe001@gmail.com
+2026-03-13 16:37:23 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:37:31 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:37:36 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:37:37 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-03-13 16:43:03 [info]: Member added: 27
+2026-03-13 16:44:47 [info]: Invitation token for ashrbahe001@gmail.com: 5be04d0c307c80b89fbfd4bede482afe84c1fcf928a3d7ddf8aa11cb19f84dd0
+2026-03-13 16:44:51 [info]: Email sent to ashrbahe001@gmail.com: 250 2.0.0 OK  1773413086 ffacd0b85a97d-439fe19ac5fsm18909210f8f.1 - gsmtp
+2026-03-13 16:44:51 [info]: Member invited: ashrbahe001@gmail.com
+2026-03-13 16:46:20 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:46:21 [info]: The connection to the database is set and all models were synchronized successfully.
+2026-03-13 16:47:00 [info]: WebSocket  and server are both running on port 3000...
+2026-03-13 16:47:01 [info]: The connection to the database is set and all models were synchronized successfully.

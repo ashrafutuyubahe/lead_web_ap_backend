@@ -23,6 +23,10 @@ const AttendanceModel = sequelize.define("Attendance", {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  explanation: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   choirMemberId: {
     type: DataTypes.INTEGER,
     references: {

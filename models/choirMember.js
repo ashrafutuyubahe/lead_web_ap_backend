@@ -48,6 +48,11 @@ const choirMember= sequelize.define("ChoirMember",{
     allowNull: false,
     unique: true,
   },
+  voiceType: {
+    type: DataTypes.ENUM,
+    values: ['bass', 'alto', 'tenor', 'soprano'],
+    allowNull: true,
+  },
   verificationToken: {
     type: DataTypes.STRING,
     allowNull: true,

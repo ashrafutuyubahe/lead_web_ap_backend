@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { AttendanceModel, choirMember } = require("../models");
+const { AttendanceModel, choirMember, sequelize } = require("../models");
 const { VALID_ATTENDANCE_TYPES, VALID_ATTENDANCE_STATUS } = require("../utils/constants");
 const logger = require("../utils/logger");
 const emailService = require("../utils/emailService");
@@ -18,7 +18,7 @@ exports.markAttendance = async (req, res) => {
 
     for (let i = 0; i < data.length; i++) {
       const entry = data[i];
-      let { attendanceType, ChoirMemberId, attendanceStatus } = entry;
+      let { attendanceType, ChoirMemberId, attendanceStatus, explanation } = entry;
 
       if (!ChoirMemberId || !attendanceType || !attendanceStatus) {
         errors.push({ index: i, error: "Missing required fields" });
@@ -49,7 +49,8 @@ exports.markAttendance = async (req, res) => {
         attendanceType,
         ChoirMemberId,
         attendanceDate: currentDate,
-        attendanceStatus: attendanceStatus.toLowerCase()
+        attendanceStatus: attendanceStatus.toLowerCase(),
+        explanation: explanation?.toString().trim() || null,
       });
     }
 
@@ -336,19 +337,29 @@ exports.downloadAttendanceReport = async (req, res) => {
     console.log(`Download request for type: "${type}" -> normalized to: "${attendanceType}"`);
     console.log('VALID_ATTENDANCE_TYPES:', VALID_ATTENDANCE_TYPES);
 
-    if (!VALID_ATTENDANCE_TYPES.includes(attendanceType)) {
+    // Case-insensitive validation
+    const normalizedValidTypes = VALID_ATTENDANCE_TYPES.map(t => t.toLowerCase());
+    if (!normalizedValidTypes.includes(attendanceType)) {
       console.log(`Invalid type: "${attendanceType}". Valid types:`, VALID_ATTENDANCE_TYPES);
       return res.status(400).json({ error: `Invalid attendance type. Must be one of: ${VALID_ATTENDANCE_TYPES.join(', ')}` });
     }
 
-    console.log(`Using database type: "${attendanceType}"`);
+    // Find the original case version for database query
+    const originalCaseType = VALID_ATTENDANCE_TYPES.find(t => t.toLowerCase() === attendanceType);
+    console.log(`Using database type: "${originalCaseType}"`);
 
     const attendanceRecords = await AttendanceModel.findAll({
-      where: { attendanceType },
+      where: { attendanceType: originalCaseType },
       include: [{
         model: choirMember,
         as: 'ChoirMember',
-        attributes: ['choirMemberFirstName', 'choirMemberLastName', 'choirMemberGender', 'choirMemberPhoneNumber']
+        attributes: [
+          'choirMemberFirstName',
+          'choirMemberLastName',
+          'choirMemberGender',
+          'choirMemberPhoneNumber',
+          'voiceType',
+        ]
       }],
       order: [['attendanceDate', 'DESC']]
     });
@@ -361,7 +372,7 @@ exports.downloadAttendanceReport = async (req, res) => {
 
     // Build CSV rows
     const csvRows = [];
-    csvRows.push('Attendance ID,Type,Status,Date,Member ID,First Name,Last Name,Gender,Phone');
+    csvRows.push('Attendance ID,Type,Status,Date,Member ID,First Name,Last Name,Gender,Phone,Voice,Explanation');
 
     attendanceRecords.forEach((record, index) => {
       const member = record.ChoirMember;
@@ -383,10 +394,12 @@ exports.downloadAttendanceReport = async (req, res) => {
       const lastName = member?.choirMemberLastName || '';
       const gender = member?.choirMemberGender || '';
       const phone = member?.choirMemberPhoneNumber || '';
+      const voice = member?.voiceType || '';
+      const explanation = record.explanation || '';
 
-      console.log('CSV values:', { attendanceId, type, status, date, memberId, firstName, lastName, gender, phone });
+      console.log('CSV values:', { attendanceId, type, status, date, memberId, firstName, lastName, gender, phone, voice, explanation });
 
-      const csvRow = `"${attendanceId}","${type}","${status}","${date}","${memberId}","${firstName}","${lastName}","${gender}","${phone}"`;
+      const csvRow = `"${attendanceId}","${type}","${status}","${date}","${memberId}","${firstName}","${lastName}","${gender}","${phone}","${voice}","${explanation}"`;
       console.log(`Adding CSV row: ${csvRow}`);
       csvRows.push(csvRow);
     });
@@ -394,6 +407,11 @@ exports.downloadAttendanceReport = async (req, res) => {
     console.log(`CSV rows count: ${csvRows.length - 1}`); // Debug: number of data rows
 
     const csv = csvRows.join('\n');
+    
+    console.log('Final CSV content:');
+    console.log(csv);
+    console.log(`CSV header columns: ${csvRows[0].split(',').length}`);
+    console.log(`First data row columns: ${csvRows[1]?.split(',').length || 'N/A'}`);
 
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="attendance-report-${attendanceType}-${new Date().toISOString().split('T')[0]}.csv"`);

@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoute");
 const attendendenceRoutes= require("./routes/attendenceRoutes");
 const monitorAttendance= require("./utils/monitorAttendance");
 const memberRoutes= require("./routes/memberRoutes")
+const { startAttendanceSummaryScheduler } = require("./utils/attendanceSummaryScheduler");
 const logger = require("./utils/logger");
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger'); 
@@ -59,3 +60,5 @@ const cors= require("cors");
     logger.info(`WebSocket  and server are both running on port ${PORT}...`);
     console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
   });
+
+  startAttendanceSummaryScheduler();
